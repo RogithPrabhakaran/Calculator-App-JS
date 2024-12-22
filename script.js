@@ -38,6 +38,16 @@ function buttonClick(event){
             else if(expression !== '' && !isLastCharOperator()) {
                 addValue(value);
             }
+            break;
+        case 'submit':
+            submit();
+            break;
+        case 'negate':
+            negate();
+            break;
+        case 'mod':
+            percentage();
+            break;
     }
 
     updateDisplay(expression, result);
@@ -70,4 +80,49 @@ function isLastCharOperator() {
 
 function startFromResult(value) {
     expression += result + value;
+}
+
+function submit() {
+    result = evaluateExpression();
+    expression = '';
+}
+
+function evaluateExpression() {
+    const evalResult = eval(expression);
+    // check if evalResult isNaN or Infinite, if it is, return a space character ' '
+    return isNaN(evalResult) || !isFinite(evalResult) ? ' '
+    :evalResult < 1 ? parseFloat(evalResult.toFixed(10))
+    : parseFloat(evalResult.toFixed(2));
+}
+
+function negate() {
+    //Negate the result if the expression is empty and result is present
+    if(expression === '' && result !== '') {
+        result = -result;
+    }
+    // If the expression is not empty toggle the sign of the expression to negative if it is not negative.
+    else if(!expression.startsWith('-') && expression !== '') {
+        expression = '-'+expression;
+    }
+    // Remove the negative sign if it is already negative.
+    else if(expression.startsWith('-')) {
+        expression = expression.slice(1);
+    }
+}
+
+function percentage() {
+    //Evaluate the expression before finding its percentagef
+    if(expression !== '') {
+        result = evaluateExpression();
+        expression = '';
+        if(!isNaN(result) && isFinite(result)) {
+            result /= 100;
+        }
+        else {
+            result = '';
+        }
+    } else if (result !== '') {
+        // If expression is empty but result is not empty then divide the result by 100
+        result = parseFloat(result) / 100;
+    }
 }
